@@ -1,36 +1,48 @@
 const fs = require('fs');
 
 class GetFiles {
-  // Get Images Files From Module Indices
-  getImagesFilenames = (stats, entry) => {
+  getFileExtension(filename) {
+    const filenameSplitArr = filename.split('.');
+    const ext = filenameSplitArr[filenameSplitArr.length - 1];
+    return ext;
+  }
+
+  // Get Files Names From Module Indices Based on Extension
+  getFilenames = (extensions, stats, entrypoint) => {
     /*
+    extensions: Array of strings for extensions
     stats: an Object which is an argument to "hooks.done"
     entry: Name of the entrypoint
     */
 
-    // 1. Get The Iterator for Module Indices
+    // Set this keyword to self to avoid confusions when reffering to this class
+    const self = this;
+
+    // 1. Create a RegExp to check if the extensions of the module files match the Regex pattern
+    const extRegex = new RegExp(extensions.join('|'));
+
+    // 2. Get The Iterator for Module Indices
     const moduleIndicesIterator = stats.compilation.entrypoints
-      .get(entry)
+      .get(entrypoint)
       ['_moduleIndices'].keys();
 
-    // 2. Iterate over each Module
+    // 3. Iterate over each Module of current entrypoint
     for (const module of moduleIndicesIterator) {
-      // 3. If Module has a Resource Property Then go on
+      // 4. If Module has a Resource Property Then go on
       if (module.resource) {
-        // 4. Get The File Extension For The Resource
-        const ext = module.resource.match(/[^.]+$/)[0];
+        // 5. Get The File Extension For The Resource
+        // const ext = module.resource.match(/[^.]+$/)[0];
+        const ext = self.getFileExtension(module.resource);
 
-        // 5. Create a regex to check if the extension matches the regex pattern
-        const regex = /svg|jpeg|jpg|gif|png/;
-        // 6. If extension is an Images File extension then go on
-        if (regex.test(ext)) {
+        // 6. If the ext matches the extensions of the RegExp, then go on
+        if (extRegex.test(ext)) {
           /*
           7. Return
-          entry: The name of the entrypoint so that the filename can be pushed in right place
+          entrypoint: The name of the entrypoint so that the filename can be pushed in right place
           files: An array of files names
           */
           return {
-            entry,
+            entrypoint,
             files: Object.keys(module.buildInfo.assets),
           };
         }
@@ -47,77 +59,101 @@ class GetFiles {
       // The output object
       const filesDetails = {
         // Array of Entrypoint Names
-        entries: [],
+        entrypoints: [],
+        // A Files object which contains all the files data
+        files: {},
       };
 
       // An Iterator for Entrypoints with "keys" as "Entrypoint Names" and "values" as "Entry Modules"
-      const entriesIterator = stats.compilation.entrypoints.entries();
+      const entrypointsIterator = stats.compilation.entrypoints.entries();
 
       // Iterate over All Entrypoints
-      for (const [entryName, entry] of entriesIterator) {
-        // Push Entrypoint Names to fileDetails.entries object
-        filesDetails.entries.push(entryName);
+      for (const [entrypoint, entrypointData] of entrypointsIterator) {
+        // Push Entrypoint Names to fileDetails.entrypoints array
+        filesDetails.entrypoints.push(entrypoint);
 
-        // Create an Array for Every Entrypoint in fileDetails
-        filesDetails[entryName] = [];
+        // Create an Array for Every Entrypoint in fileDetails.files
+        filesDetails.files[entrypoint] = {};
 
-        // Loop over all the chunks in the Entry Modules
-        entry.chunks.forEach((chunk) => {
-          // Create a Chunk Object for every chunk
-          const details = {};
+        // Create a [entrypoint].filenames array which contains all filenames for current entrypoint
+        filesDetails.files[entrypoint].filenames = [];
 
-          // Put name of the of the chunk to Chunk.name
-          details.name = chunk.name;
-
-          // Put all the files for the chunk to Chunk.filenames
-          details.filenames = [...chunk.files]; // Also Do Not Mutate The Original Array
-
-          // Put The Chunk Object to fileDetails[entryName]
-          filesDetails[entryName].push(details);
+        // Loop over all the chunks in the entrypointData
+        entrypointData.chunks.forEach((chunk) => {
+          // Push chunk.files to [entrypoint].filenames
+          filesDetails.files[entrypoint].filenames.push(...chunk.files);
         });
 
-        // Get Images For The Current Entrypoint
-        const images = self.getImagesFilenames(stats, entryName);
+        // Get Image Files For The Current Entrypoint
+        const images = self.getFilenames(
+          ['jpg', 'jpeg', 'gif', 'png', 'svg'],
+          stats,
+          entrypoint
+        );
 
-        // Loop over fileDetails[entryName] For Current Entrypoint to put the images files in right place
-        filesDetails[entryName].forEach((detail) => {
-          if (images) {
-            // Check if the Chunk.name === images.entry
-            if (detail.name === images.entry) {
-              // Push the images.files to Chunk.filenames Array
-              detail.filenames.push(...images.files);
+        // Get Text Files For The Current Entrypoint
+        const text = self.getFilenames(['txt'], stats, entrypoint);
+
+        // If There are image files
+        if (images) {
+          // Push the images.files to [entrypoint].filenames Array
+          filesDetails.files[entrypoint].filenames.push(...images.files);
+          // }
+        }
+
+        // If There are text files
+        if (text) {
+          // if (entrypoint === text.entry) {
+          // Push the images.files to [entrypoint].filenames Array
+          filesDetails.files[entrypoint].filenames.push(...text.files);
+          // }
+        }
+
+        // Create a [entrypoint].assets object which contains fields for every file extension
+        filesDetails.files[entrypoint].assets = {};
+
+        filesDetails.files[entrypoint].filenames.forEach((filename) => {
+          const ext = self.getFileExtension(filename);
+          // Push filename in [entrypoint].filenames to respective fields inside [entrypoint].assets object based on file extension
+
+          if (ext === 'txt') {
+            if (filesDetails.files[entrypoint].assets['text']) {
+              filesDetails.files[entrypoint].assets['text'].push(filename);
+            } else {
+              filesDetails.files[entrypoint].assets['text'] = [];
+              filesDetails.files[entrypoint].assets['text'].push(filename);
+            }
+          } else if (/svg|jpg|jpeg|png|gif/.test(ext)) {
+            if (filesDetails.files[entrypoint].assets['images']) {
+              filesDetails.files[entrypoint].assets['images'].push(filename);
+            } else {
+              filesDetails.files[entrypoint].assets['images'] = [];
+              filesDetails.files[entrypoint].assets['images'].push(filename);
+            }
+          } else if (ext === 'js') {
+            if (filesDetails.files[entrypoint].assets['js']) {
+              filesDetails.files[entrypoint].assets['js'].push(filename);
+            } else {
+              filesDetails.files[entrypoint].assets['js'] = [];
+              filesDetails.files[entrypoint].assets['js'].push(filename);
+            }
+          } else if ('css') {
+            if (filesDetails.files[entrypoint].assets['css']) {
+              filesDetails.files[entrypoint].assets['css'].push(filename);
+            } else {
+              filesDetails.files[entrypoint].assets['css'] = [];
+              filesDetails.files[entrypoint].assets['css'].push(filename);
+            }
+          } else {
+            if (filesDetails.files[entrypoint].assets['others']) {
+              filesDetails.files[entrypoint].assets['others'].push(filename);
+            } else {
+              filesDetails.files[entrypoint].assets['others'] = [];
+              filesDetails.files[entrypoint].assets['others'].push(filename);
             }
           }
         });
       }
-
-      /* Create a Chunk.files Object Which Contains Fields For Every File Extension */
-      // Loop Over filesDetails.entries (Entrypoint Names Array)
-      filesDetails.entries.forEach((entry) => {
-        // Then Loop over Each Entrypoint Name Array in filesDetails
-        filesDetails[entry].forEach((details) => {
-          // details == Chunk Object
-
-          // Create a Chunk.files Object
-          details.files = {};
-
-          // Loop over Chunk.filenames
-          details.filenames.forEach((filename) => {
-            // For each filename get the extension
-            const ext = filename.match(/[^.]+$/)[0];
-
-            // If extension match an Image File extension then Chunk.files.images field would be created
-            if (ext === ('svg' || 'png' || 'jpg' || 'jpeg' || 'gif')) {
-              details.files['images'] = [];
-              details.files['images'].push(filename);
-            } else {
-              // Otherwise Chunk.files[ext] would be created for Evry other File Extension
-              details.files[ext] = [];
-              details.files[ext].push(filename);
-            }
-          });
-        });
-      });
 
       // Write The final filesDetails Object as JSON to a File
       fs.writeFile(
@@ -126,7 +162,7 @@ class GetFiles {
         'utf-8',
         () => {
           console.log('GetFiles.json Written!');
-        },
+        }
       );
     });
   }
