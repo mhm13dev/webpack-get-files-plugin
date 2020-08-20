@@ -210,7 +210,7 @@ class GetFiles {
 
 			// Write The final filesDetails Object as JSON to a File
 			fs.writeFile(
-				path.resolve(outputDir, 'GetFiles.json'),
+				path.resolve('GetFiles.json'),
 				JSON.stringify(filesDetails),
 				'utf-8',
 				() => {
