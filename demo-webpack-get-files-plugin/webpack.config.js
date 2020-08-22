@@ -1,12 +1,13 @@
 const path = require('path');
-const GetFilesPlugin = require('../index');
+const GetFilesPlugin = require('webpack-get-files-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
 	mode: 'development',
 	entry: {
-		home: path.join(__dirname, 'src', 'home.js'),
+		home: path.join(__dirname, 'src', 'entry', 'home.js'),
+		other: path.join(__dirname, 'src', 'entry', 'other.js'),
 	},
 
 	output: {
