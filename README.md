@@ -1,5 +1,7 @@
 # webpack-get-files-plugin
 
+![version of the webpack-get-files-plugin](https://img.shields.io/github/package-json/v/mhm13dev/webpack-get-files-plugin?style=flat-square)
+
 #### Webpack plugin for extracting output assets filenames into a separate JSON file according to the Entrypoints specified in the webpack configuration.
 
 The main purpose of writing this plugin is that I had a project structure where I was working with NodeJS, Express, Pug (view engine) and webpack. So basically, webpack was building my assets with names having random content hashes like `index.d53b3te33yi3y.js` and it was difficult for me to inject those assets into my views e.g. `index.pug`.
