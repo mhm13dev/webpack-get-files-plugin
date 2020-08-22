@@ -60,9 +60,7 @@ class GetFiles {
 					// check if the extensions matches the imagesRegExp
 					if (self.imagesRegExp.test(fileNameInfo.ext)) {
 						// If yes, then modify the Hashed Filename to include a JSON object about the original name of the image
-						file = `{"name": "${
-							fileNameInfo.name
-						}${fileNameInfo.ext.toUpperCase()}"}??gffm??${file}`; // gffm => getFilesFromModule
+						file = `{"name": "${fileNameInfo.name}.${fileNameInfo.ext}"}??gffm??${file}`; // gffm => getFilesFromModule
 					}
 					files.push(file);
 				}
