@@ -1,24 +1,21 @@
 {
-  "name": "webpack-get-files-plugin",
-  "version": "1.0.0",
-  "description": "Webpack Plugin For Extracting Assets Filenames into a Separate JSON File According To The Entrypoints Defined in The Configuration",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/mhm13dev/webpack-get-files-plugin.git"
-  },
-  "keywords": [
-    "webpack",
-    "get-files-plugin",
-    "webpack-assets"
-  ],
-  "author": "Mubashir Hassan",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/mhm13dev/webpack-get-files-plugin/issues"
-  },
-  "homepage": "https://github.com/mhm13dev/webpack-get-files-plugin#readme"
+	"name": "webpack-get-files-plugin",
+	"version": "1.0.0",
+	"description": "Webpack Plugin For Extracting Assets Filenames into a Separate JSON File According To The Entrypoints Defined in The Configuration",
+	"main": "index.js",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/mhm13dev/webpack-get-files-plugin.git"
+	},
+	"keywords": [
+		"webpack",
+		"get-files-plugin",
+		"webpack-assets"
+	],
+	"author": "Mubashir Hassan",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/mhm13dev/webpack-get-files-plugin/issues"
+	},
+	"homepage": "https://github.com/mhm13dev/webpack-get-files-plugin#readme"
 }
