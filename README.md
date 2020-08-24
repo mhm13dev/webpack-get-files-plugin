@@ -9,82 +9,87 @@ That's why I came up with `webpack-get-files-plugin` that extracts the filenames
 
 ### Installation
 
-    npm install webpack-get-files-plugin --save-dev
+```
+npm install webpack-get-files-plugin --save-dev
+```
 
 ### Usage
 
 The Webpack Configuartion:
 
-    const  path  =  require('path');
+```javascript
+const path = require('path');
 
-    // Requiring webpack-get-files-plugin
-    const  GetFilesPlugin  =  require('webpack-get-files-plugin');
+// Requiring webpack-get-files-plugin
+const GetFilesPlugin = require('webpack-get-files-plugin');
 
-    const  MiniCssExtractPlugin  =  require('mini-css-extract-plugin');
-    const { CleanWebpackPlugin } =  require('clean-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
-    module.exports  = {
-    	mode:  'production',
-    	entry: {
-    		home:  path.join(__dirname, 'src', 'home.js'),
-    	},
-    	output: {
-    		path:  path.join(__dirname, 'dist'),
-    		filename:  'js/[name].[contentHash].js',
-    	},
-    	plugins: [
-        	// Using the Plugin
-    		new  GetFilesPlugin(),
+module.exports = {
+	mode: 'production',
+	entry: {
+		home: path.join(__dirname, 'src', 'home.js'),
+	},
+	output: {
+		path: path.join(__dirname, 'dist'),
+		filename: 'js/[name].[contentHash].js',
+	},
+	plugins: [
+		// Using the webpack-get-files-plugin
+		new GetFilesPlugin(),
 
-    		new  CleanWebpackPlugin(),
-    		new  MiniCssExtractPlugin({
-    			filename:  'css/[name].[contentHash].css',
-    		}),
-    	],
-    	module: {
-    		rules: [
-       			{
-    	   			test:  /\.css$/,
-       				use: [MiniCssExtractPlugin.loader, 'css-loader'],
-
-    			},
-    			{
-    				test: /\.(png|jpg|svg|gif|jpeg)/,
-    				use: {
-    					loader: 'file-loader',
-    					options: {
-    						name: 'images/[name].[contentHash].[ext]',
-    					},
-    				},
-    			},
-    		],
-    	},
-    };
+		new CleanWebpackPlugin(),
+		new MiniCssExtractPlugin({
+			filename: 'css/[name].[contentHash].css',
+		}),
+	],
+	module: {
+		rules: [
+			{
+				test: /\.css$/,
+				use: [MiniCssExtractPlugin.loader, 'css-loader'],
+			},
+			{
+				test: /\.(png|jpg|svg|gif|jpeg)/,
+				use: {
+					loader: 'file-loader',
+					options: {
+						name: 'images/[name].[contentHash].[ext]',
+					},
+				},
+			},
+		],
+	},
+};
+```
 
 After running the webpack build process, this plugin will emit a file named `GetFiles.json` in the root directory of your project.
 
 ### Structure of GetFiles.json
 
-    {
-        "entrypoints": ["home"],
-        "files": {
-    	    "home": {
-    		    "filenames": [
-    			    "css/home.c43adcd817b4eaa62b97.css",
-    			    "js/home.5e994fb65e62d205d1c5.js",
-    			    "{\"name\": \"webpack-logo.png\"}??gffm??images/webpack-logo.3b7bf087cbac835e6f7d4b7dc9711e72.png"
-    			    ],
-    			"assets": {
-    				"css": ["css/home.c43adcd817b4eaa62b97.css"],
-    				"js": ["js/home.5e994fb65e62d205d1c5.js"],
-    				"images": {
-    					"webpack-logo.png":  "images/webpack-logo.3b7bf087cbac835e6f7d4b7dc9711e72.png",
-    					"github.svg":  "images/github.16a9304e38fd8167989291ab92544e14.svg"
-    				}
-    			}
-    		}
-    	}
-    }
+```javascript
+{
+	"entrypoints": ["home"],
+	"files": {
+		"home": {
+			"filenames": [
+			    "css/home.c43adcd817b4eaa62b97.css",
+			    "js/home.5e994fb65e62d205d1c5.js",
+			    "{\"name\": \"webpack-logo.png\"}??gffm??images/webpack-logo.3b7bf087cbac835e6f7d4b7dc9711e72.png"
+			],
+			"assets": {
+				"css": ["css/home.c43adcd817b4eaa62b97.css"],
+				"js": ["js/home.5e994fb65e62d205d1c5.js"],
+				"images": {
+					"webpack-logo.png":  "images/webpack-logo.3b7bf087cbac835e6f7d4b7dc9711e72.png",
+					"github.svg":  "images/github.16a9304e38fd8167989291ab92544e14.svg"
+				}
+			}
+		}
+	}
+}
+```
 
 ### Demo Project
 
@@ -97,19 +102,27 @@ For that I have a separate boilerplate project where I have used this plugin.
 
 Clone this repo:
 
-    git clone https://github.com/mhm13dev/webpack-get-files-plugin.git
+```
+git clone https://github.com/mhm13dev/webpack-get-files-plugin.git
+```
 
 Change into repo's directory
 
-    cd webpack-get-files-plugin
+```
+cd webpack-get-files-plugin
+```
 
 Change into demo project directory
 
-    cd demo-webpack-get-files-plugin
+```
+cd demo-webpack-get-files-plugin
+```
 
 Install the dependencies
 
-    npm install
+```
+npm install
+```
 
 Run the webpack build process
 
