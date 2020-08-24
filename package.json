@@ -1,6 +1,6 @@
 {
 	"name": "webpack-get-files-plugin",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "Webpack plugin for extracting output assets filenames into a separate JSON file according to the Entrypoints specified in the webpack configuration.",
 	"main": "index.js",
 	"repository": {
